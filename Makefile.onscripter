@@ -3,7 +3,7 @@
 # Makefile.onscripter - General makefile rules for ONScripter
 #
 
-GUI_OBJS =	onscripter$(OBJSUFFIX)\
+GUI_OBJS =	ONScripter$(OBJSUFFIX)\
 	ONScripter_animation$(OBJSUFFIX) \
 	ONScripter_command$(OBJSUFFIX) \
 	ONScripter_effect$(OBJSUFFIX) \

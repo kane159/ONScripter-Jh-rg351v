@@ -10,8 +10,7 @@ SYSBIN_PATH=
 .SUFFIXES:
 .SUFFIXES: $(OBJSUFFIX) .cpp .h
 
-TARGET = vendor/lua/liblua.a \
-	onscripter$(EXESUFFIX) \
+TARGET = onscripter$(EXESUFFIX) \
 	sardec$(EXESUFFIX) \
 	nsadec$(EXESUFFIX) \
 	sarconv$(EXESUFFIX) \
@@ -21,7 +20,7 @@ EXT_OBJS =
 # mandatory: SDL, SDL_ttf, SDL_image, SDL_mixer, bzip2
 DEFS = -DLINUX -DUSE_SDL_RENDERER -DNDEBUG
 INCS = `$(SYSROOT_PREFIX)$(SYSBIN_PATH)sdl2-config --cflags`
-LIBS = `$(SYSROOT_PREFIX)$(SYSBIN_PATH)sdl2-config --libs` -L./vendor/lua/ -lSDL2_ttf -lSDL2_image -lSDL2_mixer -ljpeg -lbz2 -lm -llua -ldl
+LIBS = `$(SYSROOT_PREFIX)$(SYSBIN_PATH)sdl2-config --libs` -lSDL2_ttf -lSDL2_image -lSDL2_mixer -ljpeg -lbz2 -lm -ldl
 EXT_FLAGS = 
 
 # recommended: smpeg
@@ -53,12 +52,14 @@ LIBS += -logg -lvorbis -lvorbisfile
 
 # optional: lua
 DEFS += -DUSE_LUA
-INCS += -I./ -I./vendor/lua/ -I/usr/include/lua
-#LIBS += -llua
+INCS += -I./
+INCS += `pkg-config lua --cflags`
+
+LIBS += `pkg-config lua --libs`
 EXT_OBJS += LUAHandler$(OBJSUFFIX)
 
 # optional: SIMD optimizing
-DEFS += -DUSE_SIMD -DUSE_SIMD_X86_SSE2
+#DEFS += -DUSE_SIMD -DUSE_SIMD_X86_SSE2
 
 # optional: multicore rendering
 DEFS += -DUSE_OMP_PARALLEL
@@ -95,7 +96,3 @@ RM = rm -f
 
 
 include Makefile.onscripter
-
-
-vendor/lua/liblua.a:
-	$(MAKE) -C vendor/lua -f makefile

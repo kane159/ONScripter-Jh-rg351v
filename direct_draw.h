@@ -25,7 +25,7 @@
 
 class DirectDraw
 {
-    SDL_Texture *texture_info[MAX_TEXTURE_NUM] = {0};
+    SDL_Texture *texture_info[MAX_TEXTURE_NUM]; // = {0};
 public:
     void loadTexture(int no, const char *filename);
     void deleteTexture(int no);
@@ -35,4 +35,18 @@ public:
     void getTextureSize(int no, int &w, int &h);
     void present();
     void clear();
+
+	DirectDraw()
+	{
+		int i = 0;
+		for (i = 0; i < MAX_TEXTURE_NUM; ++i)
+		{
+			texture_info[i] = NULL;
+		}
+	}
+
+	virtual ~DirectDraw()
+	{
+
+	}
 };

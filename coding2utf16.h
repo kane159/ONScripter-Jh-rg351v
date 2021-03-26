@@ -22,7 +22,11 @@
 #ifndef __CODING2UTF16_H__
 #define __CODING2UTF16_H__
 
+#if defined(_MSC_VER) && _MSC_VER <= 1200
+#include <SDL.h>
+#else
 #include <stdint.h>
+#endif
 
 class Coding2UTF16{
 public:

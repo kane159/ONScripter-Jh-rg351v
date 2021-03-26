@@ -2,8 +2,8 @@
  *
  *  ONScripter_rmenu.cpp - Right click menu handler of ONScripter
  *
- *  Copyright (c) 2001-2016 Ogapee. All rights reserved.
- *            (C) 2014-2016 jh10001 <jh10001@live.cn>
+ *  Copyright (c) 2001-2018 Ogapee. All rights reserved.
+ *            (C) 2014-2019 jh10001 <jh10001@live.cn>
  *
  *  ogapee@aqua.dti2.ne.jp
  *
@@ -79,6 +79,7 @@ static int osprintf(char *str, const char *format, ...)
         }
     }
     va_end( list );
+    return strlen(str);
 }
 #define sprintf osprintf
 #endif
@@ -364,7 +365,6 @@ bool ONScripter::executeSystemLoad()
                 return false;
 
             leaveSystemCall( false );
-            refreshSurface(backup_surface, NULL, REFRESH_NORMAL_MODE);
             saveon_flag = true;
             internal_saveon_flag = true;
             text_on_flag = false;
@@ -748,12 +748,12 @@ void ONScripter::buildDialog(bool yesno_flag, const char *mes1, const char *mes2
         mes[0] = MESSAGE_OK;
         mes[1] = MESSAGE_CANCEL;
     }
-
+	int j;
     for (int i=0 ; i<2 ; i++){
         SDL_Surface *bs = SDL_CreateRGBSurface( SDL_SWSURFACE, DIALOG_BUTTON_W*2, DIALOG_BUTTON_H,
                                                 fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
 
-        for (int j=0 ; j<2 ; j++){
+        for (j=0 ; j<2 ; j++){
             rect.x = DIALOG_BUTTON_W*j;
             rect.y = 0;
             rect.w = DIALOG_BUTTON_W; rect.h = DIALOG_BUTTON_H;
@@ -783,7 +783,7 @@ void ONScripter::buildDialog(bool yesno_flag, const char *mes1, const char *mes2
             SDL_FreeSurface(bs);
         }
 
-        for (int j=0 ; j<2 ; j++){
+        for (j=0 ; j<2 ; j++){
             rect.x = DIALOG_BUTTON_W*j+2;
             rect.y = 2;
             rect.w = DIALOG_BUTTON_W-4; rect.h = DIALOG_BUTTON_H-4;

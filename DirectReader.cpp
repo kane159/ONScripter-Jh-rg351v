@@ -2,8 +2,8 @@
 /*
  *  DirectReader.cpp - Reader from independent files
  *
- *  Copyright (c) 2001-2016 Ogapee. All rights reserved.
- *            (C) 2014-2016 jh10001 <jh10001@live.cn>
+ *  Copyright (c) 2001-2018 Ogapee. All rights reserved.
+ *            (C) 2014-2019 jh10001 <jh10001@live.cn>
  *
  *  ogapee@aqua.dti2.ne.jp
  *
@@ -33,7 +33,7 @@
 #define IS_TWO_BYTE(x) \
         ( ((unsigned char)(x) > (unsigned char)0x80) && ((unsigned char)(x) !=(unsigned char) 0xff) )
 
-extern Coding2UTF16 *coding2utf16;
+Coding2UTF16 *coding2utf16 = NULL;
 
 #ifndef SEEK_END
 #define SEEK_END 2
@@ -282,12 +282,13 @@ int DirectReader::getRegisteredCompressionType( const char *file_name )
     return NO_COMPRESSION;
 }
     
-/*struct DirectReader::FileInfo DirectReader::getFileByIndex( unsigned int index )
+struct DirectReader::FileInfo DirectReader::getFileByIndex( unsigned int index )
 {
     DirectReader::FileInfo fi;
+    memset(&fi, 0, sizeof(DirectReader::FileInfo));
     
     return fi;
-}*/
+}
 
 FILE *DirectReader::getFileHandle( const char *file_name, int &compression_type, size_t *length )
 {

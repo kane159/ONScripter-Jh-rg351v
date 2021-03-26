@@ -2,8 +2,8 @@
  * 
  *  ONScripter_command.cpp - Command executer of ONScripter
  *
- *  Copyright (c) 2001-2016 Ogapee. All rights reserved.
- *            (C) 2014-2016 jh10001 <jh10001@live.cn>
+ *  Copyright (c) 2001-2018 Ogapee. All rights reserved.
+ *            (C) 2014-2019 jh10001 <jh10001@live.cn>
  *
  *  ogapee@aqua.dti2.ne.jp
  *
@@ -23,6 +23,12 @@
  */
 
 #include "ONScripter.h"
+#if defined(LINUX) || defined(MACOSX) || defined(IOS)
+#include <sys/types.h>
+#include <sys/stat.h>
+#elif defined(WIN32)
+#include <direct.h>
+#endif
 #include "version.h"
 #include "Utils.h"
 
@@ -252,7 +258,6 @@ int ONScripter::textoffCommand()
 {
     if (windowchip_sprite_no >= 0)
         sprite_info[windowchip_sprite_no].visible = false;
-    refreshSurface(backup_surface, NULL, REFRESH_NORMAL_MODE);
 
     leaveTextDisplayMode(true);
 
@@ -292,7 +297,7 @@ int ONScripter::texecCommand()
         page_enter_status = 0;
     }
 
-    saveonCommand();
+    saveon_flag = true;
     
     return RET_CONTINUE;
 }
@@ -323,7 +328,7 @@ int ONScripter::talCommand()
     }
 
     EffectLink *el = parseEffect(true);
-    if (setEffect(el, true, true)) return RET_CONTINUE;
+    if (setEffect(el)) return RET_CONTINUE;
     while (doEffect(el));
 
     return RET_CONTINUE;
@@ -785,7 +790,8 @@ int ONScripter::selectCommand()
 
     bool comma_flag = true;
     if ( select_mode == SELECT_CSEL_MODE ){
-        saveoffCommand();
+        if (saveon_flag && internal_saveon_flag) storeSaveFile();
+        saveon_flag = false;
     }
     shortcut_mouse_line = -1;
 
@@ -966,12 +972,9 @@ int ONScripter::savescreenshotCommand()
     resizeSurface( screenshot_surface, surface );
 
     const char *buf = script_h.readStr();
-    FILE *fp = fopen(buf, "wb");
-    if (fp){
-        SDL_RWops *rwops = SDL_RWFromFP(fp, SDL_TRUE);
-        if (SDL_SaveBMP_RW(surface, rwops, 1) != 0)
-            utils::printError("Save screenshot failed: %s", SDL_GetError());
-    }
+    SDL_RWops *rwops = SDL_RWFromFile(buf, "wb");
+    if (rwops == NULL || SDL_SaveBMP_RW(text_info.image_surface, rwops, 1) != 0)
+        utils::printError("Save screenshot failed: %s\n", SDL_GetError());
     SDL_FreeSurface(surface);
 
     return RET_CONTINUE;
@@ -1125,7 +1128,7 @@ int ONScripter::quakeCommand()
     dirty_rect.fill( screen_width, screen_height );
     SDL_BlitSurface( accumulation_surface, NULL, effect_dst_surface, NULL );
 
-    if (setEffect(&tmp_effect, true, true)) return RET_CONTINUE;
+    if (setEffect(&tmp_effect)) return RET_CONTINUE;
     while (doEffect(&tmp_effect));
 
     return RET_CONTINUE;
@@ -1212,7 +1215,7 @@ int ONScripter::printCommand()
     leaveTextDisplayMode();
 
     EffectLink *el = parseEffect(true);
-    if (setEffect(el, true, true)) return RET_CONTINUE;
+    if (setEffect(el)) return RET_CONTINUE;
     while (doEffect(el));
 
     return RET_CONTINUE;
@@ -1260,16 +1263,12 @@ int ONScripter::playCommand()
 
 int ONScripter::ofscopyCommand()
 {
-#ifdef USE_SDL_RENDERER
     SDL_Surface *tmp_surface = AnimationInfo::alloc32bitSurface(render_view_rect.w, render_view_rect.h, texture_format);
     SDL_LockSurface(tmp_surface);
     SDL_RenderReadPixels(renderer, &render_view_rect, tmp_surface->format->format, tmp_surface->pixels, tmp_surface->pitch);
     SDL_UnlockSurface(tmp_surface);
     resizeSurface( tmp_surface, accumulation_surface );
     SDL_FreeSurface(tmp_surface);
-#else
-    SDL_BlitSurface(screen_surface, NULL, accumulation_surface, NULL);
-#endif
 
     return RET_CONTINUE;
 }
@@ -1838,7 +1837,6 @@ int ONScripter::loadgameCommand()
     mp3fadeout_duration = 0; //don't use fadeout during a load
     if ( !loadSaveFile( no ) ){
         dirty_rect.fill( screen_width, screen_height );
-        refreshSurface(backup_surface, &dirty_rect.bounding_box, REFRESH_NORMAL_MODE);
         flush( refreshMode() );
 
         saveon_flag = true;
@@ -1903,7 +1901,7 @@ int ONScripter::ldCommand()
     }
 
     EffectLink *el = parseEffect(true);
-    if (setEffect(el, true, true)) return RET_CONTINUE;
+    if (setEffect(el)) return RET_CONTINUE;
     while (doEffect(el));
 
     return RET_CONTINUE;
@@ -1921,6 +1919,7 @@ static void smpeg_filter_callback( SDL_Overlay * dst, SDL_Overlay * src, SDL_Rec
     if (!ai) return;
 
     ai->convertFromYUV(src);
+    ons->updateEffectDst();
 }
 
 static void smpeg_filter_destroy( struct SMPEG_Filter * filter )
@@ -2090,7 +2089,7 @@ int ONScripter::humanorderCommand()
             dirty_rect.add( tachi_info[i].pos );
 
     EffectLink *el = parseEffect(true);
-    if (setEffect(el, true, true)) return RET_CONTINUE;
+    if (setEffect(el)) return RET_CONTINUE;
     while (doEffect(el));
 
     return RET_CONTINUE;
@@ -2306,15 +2305,15 @@ int ONScripter::getscreenshotCommand()
 
     screenshot_w = w;
     screenshot_h = h;
-#ifdef USE_SDL_RENDERER
+
     if (screenshot_surface == NULL) screenshot_surface = AnimationInfo::alloc32bitSurface(render_view_rect.w, render_view_rect.h, texture_format);
-    SDL_LockSurface(screenshot_surface);
-    SDL_RenderReadPixels(renderer, &render_view_rect, screenshot_surface->format->format, screenshot_surface->pixels, screenshot_surface->pitch);
-    SDL_UnlockSurface(screenshot_surface);
-#else
-    if (screenshot_surface == NULL) screenshot_surface = AnimationInfo::alloc32bitSurface(screen_device_width, screen_device_height, texture_format);
-    SDL_BlitSurface(screen_surface, NULL, screenshot_surface, NULL);
-#endif
+    if (screen_dirty_flag) {
+        SDL_LockSurface(screenshot_surface);
+        SDL_RenderReadPixels(renderer, &render_view_rect, screenshot_surface->format->format, screenshot_surface->pixels, screenshot_surface->pitch);
+        SDL_UnlockSurface(screenshot_surface);
+    } else {
+        SDL_BlitSurface(accumulation_surface, NULL, screenshot_surface, NULL);
+    }
 
     return RET_CONTINUE;
 }
@@ -2674,7 +2673,7 @@ int ONScripter::flushoutCommand()
 
     dirty_rect.fill(screen_width, screen_height);
 
-    if (setEffect(&tmp_effect, false, false)) return RET_CONTINUE;
+    if (setEffect(&tmp_effect)) return RET_CONTINUE;
 
     setStr(&bg_info.file_name, "white");
     createBackground();
@@ -2706,6 +2705,21 @@ int ONScripter::exec_dllCommand()
         c++;
     }
     dll_name[c] = '\0';
+
+    if (strcmp(dll_name, "fileutil.dll") == 0){
+        if (strncmp(buf+c, "/mkdir", 6) == 0){
+            c += 7;
+            char *dir = new char[strlen(archive_path) + strlen(buf+c) + 1];
+            sprintf(dir, "%s%s", archive_path, buf+c);
+#if defined(LINUX) || defined(MACOSX) || defined(IOS)
+            mkdir(dir, 0755);
+#elif defined(WIN32)
+            _mkdir(dir);
+#endif
+            delete[] dir;
+        }
+        return RET_CONTINUE;
+    }
 
     FILE *fp;
     if ( ( fp = fopen( dll_file, "r" ) ) == NULL ){
@@ -3208,7 +3222,7 @@ int ONScripter::clCommand()
     }
 
     EffectLink *el = parseEffect(true);
-    if (setEffect(el, true, true)) return RET_CONTINUE;
+    if (setEffect(el)) return RET_CONTINUE;
     while (doEffect(el));
 
     return RET_CONTINUE;
@@ -3282,18 +3296,8 @@ int ONScripter::captionCommand()
     size_t len = strlen(buf);
 
     char *buf2 = new char[len*3+1];
-#if defined(MACOSX) && (SDL_COMPILEDVERSION >= 1208) || SDL_VERSION_ATLEAST(2,0,0)
+
     DirectReader::convertCodingToUTF8(buf2, buf);
-#elif defined(LINUX) || ((defined(WIN32) || defined(_WIN32)) && defined(UTF8_CAPTION))
-#if defined(UTF8_CAPTION)
-    DirectReader::convertCodingToUTF8(buf2, buf);
-#else
-    strcpy(buf2, buf);
-    DirectReader::convertCodingToEUC(buf2);
-#endif
-#else
-    strcpy(buf2, buf);
-#endif
     
     setStr( &wm_title_string, buf2 );
     setStr( &wm_icon_string,  buf2 );
@@ -3507,11 +3511,8 @@ int ONScripter::btndefCommand()
             parseTaggedString( &btndef_info );
             btndef_info.trans_mode = AnimationInfo::TRANS_COPY;
             setupAnimationInfo( &btndef_info );
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+
             SDL_SetSurfaceBlendMode(btndef_info.image_surface, SDL_BLENDMODE_NONE);
-#else
-            SDL_SetAlpha( btndef_info.image_surface, DEFAULT_BLIT_FLAG, SDL_ALPHA_OPAQUE );
-#endif
         }
     }
     
@@ -3665,6 +3666,7 @@ int ONScripter::bltCommand()
         }
         src_rect.x -= blt_texture_src_rect.x;
         src_rect.y -= blt_texture_src_rect.y;
+        screen_dirty_flag = true;
         SDL_RenderCopy(renderer, blt_texture, &src_rect, &dst_rect);
         SDL_RenderPresent(renderer);
         dirty_rect.clear();
@@ -3716,7 +3718,7 @@ int ONScripter::bgCommand()
     dirty_rect.fill( screen_width, screen_height );
 
     EffectLink *el = parseEffect(true);
-    if (setEffect(el, true, true)) return RET_CONTINUE;
+    if (setEffect(el)) return RET_CONTINUE;
     while (doEffect(el));
 
     return RET_CONTINUE;
@@ -3868,15 +3870,16 @@ int ONScripter::allsp2resumeCommand()
 
 int ONScripter::allspresumeCommand()
 {
+	int i;
     all_sprite_hide_flag = false;
 
-    for ( int i=0 ; i<3 ; i++ ){
+    for ( i=0 ; i<3 ; i++ ){
         AnimationInfo &ai = tachi_info[i];
         if (ai.image_surface && ai.visible)
             dirty_rect.add( ai.pos );
     }
 
-    for ( int i=0 ; i<MAX_SPRITE_NUM ; i++ ){
+    for ( i=0 ; i<MAX_SPRITE_NUM ; i++ ){
         AnimationInfo &ai = sprite_info[i];
         if (ai.image_surface && ai.visible)
             dirty_rect.add( ai.pos );
@@ -3899,15 +3902,16 @@ int ONScripter::allsp2hideCommand()
 
 int ONScripter::allsphideCommand()
 {
+	int i;
     all_sprite_hide_flag = true;
 
-    for ( int i=0 ; i<3 ; i++ ){
+    for ( i=0 ; i<3 ; i++ ){
         AnimationInfo &ai = tachi_info[i];
         if (ai.image_surface && ai.visible)
             dirty_rect.add( ai.pos );
     }
 
-    for ( int i=0 ; i<MAX_SPRITE_NUM ; i++ ){
+    for ( i=0 ; i<MAX_SPRITE_NUM ; i++ ){
         AnimationInfo &ai = sprite_info[i];
         if (ai.image_surface && ai.visible)
             dirty_rect.add( ai.pos );

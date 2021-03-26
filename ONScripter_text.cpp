@@ -2,8 +2,8 @@
  * 
  *  ONScripter_text.cpp - Text parser of ONScripter
  *
- *  Copyright (c) 2001-2016 Ogapee. All rights reserved.
- *            (C) 2014-2016 jh10001 <jh10001@live.cn>
+ *  Copyright (c) 2001-2018 Ogapee. All rights reserved.
+ *            (C) 2014-2019 jh10001 <jh10001@live.cn>
  *
  *  ogapee@aqua.dti2.ne.jp
  *
@@ -118,13 +118,9 @@ void ONScripter::drawGlyph( SDL_Surface *dst_surface, FontInfo *info, SDL_Color 
     bool rotate_flag = false;
     if ( info->getTateyokoMode() == FontInfo::TATE_MODE && IS_ROTATION_REQUIRED(text) ) rotate_flag = true;
     
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-    dst_rect.x = xy[0] + minx;
-    dst_rect.y = xy[1] + TTF_FontAscent((TTF_Font*)info->ttf_font[0]) - maxy;
-#else
     dst_rect.x = xy[0];
     dst_rect.y = xy[1];
-#endif
+
     dst_rect.y -= (TTF_FontHeight((TTF_Font*)info->ttf_font[0]) - info->font_size_xy[1]*screen_ratio1/screen_ratio2)/2;
 
     if ( rotate_flag ) dst_rect.x += miny - minx;
@@ -440,14 +436,13 @@ void ONScripter::enterTextDisplayMode(bool text_flag)
     }
     
     if (!(display_mode & DISPLAY_MODE_TEXT)){
-        refreshSurface( effect_dst_surface, NULL, refresh_shadow_text_mode );
         dirty_rect.clear();
         dirty_rect.add( sentence_font_info.pos );
+        display_mode = DISPLAY_MODE_TEXT;
 
-        if (setEffect(&window_effect, false, true)) return;
+        if (setEffect(&window_effect)) return;
         while(doEffect(&window_effect, false));
 
-        display_mode = DISPLAY_MODE_TEXT;
         text_on_flag = true;
     }
 }
@@ -457,13 +452,11 @@ void ONScripter::leaveTextDisplayMode(bool force_leave_flag)
     if (display_mode & DISPLAY_MODE_TEXT &&
         (force_leave_flag || erase_text_window_mode != 0)){
 
-        SDL_BlitSurface(backup_surface, NULL, effect_dst_surface, NULL);
         dirty_rect.add(sentence_font_info.pos);
-            
-        if (setEffect(&window_effect, false, false)) return;
-        while(doEffect(&window_effect, false));
-
         display_mode = DISPLAY_MODE_NORMAL;
+            
+        if (setEffect(&window_effect)) return;
+        while(doEffect(&window_effect, false));
     }
 }
 
@@ -702,7 +695,9 @@ int ONScripter::textCommand()
             string_buffer_offset++;
     }
 
-    if (pretextgosub_label && 
+    char *current_script = script_h.getCurrent();
+    if (pretextgosub_label &&
+        (*(current_script-1) == 0x0a || *(current_script-1) == 0x0d) &&
         (!pagetag_flag || page_enter_status == 0) &&
         line_enter_status == 0){
 

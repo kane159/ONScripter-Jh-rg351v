@@ -29,17 +29,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include "SarReader.h"
-#include "sjis2utf16.h"
 #ifdef _WIN32
 #include <direct.h>
-
 inline int mkdir(const char *pathname, int unused){
   return _mkdir(pathname);
 }
 #endif
 
 extern int errno;
-Coding2UTF16 *coding2utf16 = new SJIS2UTF16();
 
 int main( int argc, char **argv )
 {

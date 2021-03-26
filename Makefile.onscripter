@@ -94,7 +94,7 @@ simple_aviplay$(EXESUFFIX): simple_aviplay$(OBJSUFFIX) AVIWrapper$(OBJSUFFIX)
 	$(CXX) -o $(LDOUT)$@ simple_aviplay$(OBJSUFFIX) AVIWrapper$(OBJSUFFIX) $(LIBS)
 
 onscripter$(EXESUFFIX): $(ONSCRIPTER_OBJS)
-	$(CXX) $< $(ONSCRIPTER_OBJS) $(LIBS) $(EXT_FLAGS) -o onscripter$(EXESUFFIX)
+	$(CXX) $(ONSCRIPTER_OBJS) $(LIBS) $(EXT_FLAGS) -o onscripter$(EXESUFFIX)
 
 clean:
 	-$(RM) $(TARGET)

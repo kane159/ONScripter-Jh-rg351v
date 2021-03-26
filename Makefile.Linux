@@ -9,7 +9,8 @@ OBJSUFFIX = .o
 .SUFFIXES:
 .SUFFIXES: $(OBJSUFFIX) .cpp .h
 
-TARGET = onscripter$(EXESUFFIX) \
+TARGET = vendor/lua/liblua.a \
+	onscripter$(EXESUFFIX) \
 	sardec$(EXESUFFIX) \
 	nsadec$(EXESUFFIX) \
 	sarconv$(EXESUFFIX) \
@@ -19,7 +20,7 @@ EXT_OBJS =
 # mandatory: SDL, SDL_ttf, SDL_image, SDL_mixer, bzip2
 DEFS = -DLINUX -DUSE_SDL_RENDERER -DNDEBUG
 INCS = `sdl2-config --cflags`
-LIBS = `sdl2-config --libs` -lSDL2_ttf -lSDL2_image -lSDL2_mixer -ljpeg -lbz2 -lm
+LIBS = `sdl2-config --libs` -L./vendor/lua/ -lSDL2_ttf -lSDL2_image -lSDL2_mixer -ljpeg -lbz2 -lm -llua -ldl
 EXT_FLAGS = 
 
 # recommended: smpeg
@@ -51,8 +52,8 @@ LIBS += -logg -lvorbis -lvorbisfile
 
 # optional: lua
 DEFS += -DUSE_LUA
-INCS += -I/usr/include/lua
-LIBS += -llua
+INCS += -I./ -I./vendor/lua/ -I/usr/include/lua
+#LIBS += -llua
 EXT_OBJS += LUAHandler$(OBJSUFFIX)
 
 # optional: SIMD optimizing
@@ -91,4 +92,9 @@ CFLAGS = -std=c++11 -O3 -Wall -fomit-frame-pointer -pipe -c $(INCS) $(DEFS) $(EX
 
 RM = rm -f
 
+
 include Makefile.onscripter
+
+
+vendor/lua/liblua.a:
+	$(MAKE) -C vendor/lua

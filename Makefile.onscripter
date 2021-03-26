@@ -80,22 +80,22 @@ ONSCRIPTER_HEADER = ONScripter.h $(PARSER_HEADER)
 ALL: $(TARGET)
 
 sardec$(EXESUFFIX): $(SARDEC_OBJS)
-	$(LD) $(LDOUT)$@ $(SARDEC_OBJS) $(LIBS)
+	$(CXX) -o $(LDOUT)$@ $(SARDEC_OBJS) $(LIBS)
 
 sarconv$(EXESUFFIX): $(SARCONV_OBJS)
-	$(LD) $(LDOUT)$@ $(SARCONV_OBJS) $(LIBS)
+	$(CXX) -o $(LDOUT)$@ $(SARCONV_OBJS) $(LIBS)
 
 nsadec$(EXESUFFIX): $(NSADEC_OBJS)
-	$(LD) $(LDOUT)$@ $(NSADEC_OBJS) $(LIBS)
+	$(CXX) -o $(LDOUT)$@ $(NSADEC_OBJS) $(LIBS)
 
 nsaconv$(EXESUFFIX): $(NSACONV_OBJS)
-	$(LD) $(LDOUT)$@ $(NSACONV_OBJS) $(LIBS)
+	$(CXX) -o $(LDOUT)$@ $(NSACONV_OBJS) $(LIBS)
 
 simple_aviplay$(EXESUFFIX): simple_aviplay$(OBJSUFFIX) AVIWrapper$(OBJSUFFIX)
-	$(LD) $(LDOUT)$@ simple_aviplay$(OBJSUFFIX) AVIWrapper$(OBJSUFFIX) $(LIBS)
+	$(CXX) -o $(LDOUT)$@ simple_aviplay$(OBJSUFFIX) AVIWrapper$(OBJSUFFIX) $(LIBS)
 
 onscripter$(EXESUFFIX): $(ONSCRIPTER_OBJS)
-	$(LD) onscripter$(EXESUFFIX) $(ONSCRIPTER_OBJS) $(LIBS) $(EXT_FLAGS)
+	$(CXX) -o onscripter$(EXESUFFIX) $(ONSCRIPTER_OBJS) $(LIBS) $(EXT_FLAGS)
 
 clean:
 	-$(RM) $(TARGET)

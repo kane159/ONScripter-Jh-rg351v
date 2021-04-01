@@ -41,6 +41,9 @@ static BOOL MByteToWChar(LPCSTR lpcszStr, LPWSTR lpwszStr, DWORD dwSize)
 #endif
 #include <stdio.h>
 #include <stdarg.h>
+#if defined(_MSC_VER)
+#include <windows.h>
+#endif
 
 namespace utils{
 	inline void printInfo(const char *format, ...){
@@ -54,6 +57,10 @@ namespace utils{
 		LPWSTR wstr = new WCHAR[128];
 		MByteToWChar(buf, wstr, 256);
 		OutputDebugString(wstr);
+#elif defined(_MSC_VER)
+		char *buf = new char[256];
+		vsprintf(buf, format, ap);
+		OutputDebugString(buf);
 #else
 		vprintf(format, ap);
 #endif
@@ -71,6 +78,10 @@ namespace utils{
 		LPWSTR wstr = new WCHAR[128];
 		MByteToWChar(buf, wstr, 256);
 		OutputDebugString(wstr);
+#elif defined(_MSC_VER)
+		char *buf = new char[256];
+		vsprintf(buf, format, ap);
+		OutputDebugString(buf);
 #else
 		vfprintf(stderr, format, ap);
 #endif

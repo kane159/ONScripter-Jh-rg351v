@@ -39,7 +39,7 @@ inline int mkdir(const char *pathname, int unused){
 #endif
 
 extern int errno;
-Coding2UTF16 *coding2utf16;
+extern Coding2UTF16 *coding2utf16;
 
 int main( int argc, char **argv )
 {

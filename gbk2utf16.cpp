@@ -24,9 +24,9 @@
 
 static const uint16_t CODINGLEFT = 0x8140, CODINGRIGHT = 0xfefe;
 
-static unsigned short *utf16_2_gbk_4e;
+static uint16_t *utf16_2_gbk_4e;
 
-static uint16_t *gbk_2_utf16 = nullptr;
+static uint16_t *gbk_2_utf16 = NULL;
 static uint16_t gbk_2_utf16_org[][2] = {
   {0x8140,0x4e02},
   {0x8141,0x4e04},

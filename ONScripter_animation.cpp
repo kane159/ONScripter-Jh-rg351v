@@ -2,8 +2,8 @@
  * 
  *  ONScripter_animation.cpp - Methods to manipulate AnimationInfo
  *
- *  Copyright (c) 2001-2016 Ogapee. All rights reserved.
- *            (C) 2014-2016 jh10001 <jh10001@live.cn>
+ *  Copyright (c) 2001-2018 Ogapee. All rights reserved.
+ *            (C) 2014-2018 jh10001 <jh10001@live.cn>
  *
  *  ogapee@aqua.dti2.ne.jp
  *
@@ -33,9 +33,10 @@
 
 int ONScripter::calcDurationToNextAnimation()
 {
+	int i;
     int min = 0; // minimum next time
     
-    for (int i=0 ; i<3 ; i++){
+    for (i=0 ; i<3 ; i++){
         AnimationInfo *anim = &tachi_info[i];
         if (anim->visible && anim->is_animatable){
             if (min == 0 || min > anim->next_time)
@@ -43,7 +44,7 @@ int ONScripter::calcDurationToNextAnimation()
         }
     }
 
-    for (int i=MAX_SPRITE_NUM-1 ; i>=0 ; i--){
+    for (i=MAX_SPRITE_NUM-1 ; i>=0 ; i--){
         AnimationInfo *anim = &sprite_info[i];
         if (anim->visible && anim->is_animatable){
             if (min == 0 || min > anim->next_time)
@@ -53,10 +54,8 @@ int ONScripter::calcDurationToNextAnimation()
 
     if (!textgosub_label &&
          (clickstr_state == CLICK_WAIT || clickstr_state == CLICK_NEWPAGE)){
-        AnimationInfo *anim;
-        if      (clickstr_state == CLICK_WAIT)
-            anim = &cursor_info[0];
-        else// if (clickstr_state == CLICK_NEWPAGE)
+        AnimationInfo *anim = &cursor_info[0]; // CLICK_WAIT
+        if (clickstr_state == CLICK_NEWPAGE)
             anim = &cursor_info[1];
 
         if (anim->visible && anim->is_animatable){
@@ -77,11 +76,12 @@ int ONScripter::calcDurationToNextAnimation()
 
 void ONScripter::proceedAnimation(int current_time)
 {
-    for (int i=0 ; i<3 ; i++)
+	int i;
+    for (i=0 ; i<3 ; i++)
         if (tachi_info[i].proceedAnimation(current_time))
             flushDirect(tachi_info[i].pos, refreshMode() | (draw_cursor_flag?REFRESH_CURSOR_MODE:0));
         
-    for (int i=MAX_SPRITE_NUM-1 ; i>=0 ; i--)
+    for (i=MAX_SPRITE_NUM-1 ; i>=0 ; i--)
         if (sprite_info[i].proceedAnimation(current_time))
             flushDirect(sprite_info[i].pos, refreshMode() | (draw_cursor_flag?REFRESH_CURSOR_MODE:0));
 
@@ -114,10 +114,8 @@ void ONScripter::proceedAnimation(int current_time)
 
     if (!textgosub_label &&
         (clickstr_state == CLICK_WAIT || clickstr_state == CLICK_NEWPAGE)){
-        AnimationInfo *anim;
-        if (clickstr_state == CLICK_WAIT)
-            anim = &cursor_info[0];
-        else// if (clickstr_state == CLICK_NEWPAGE)
+        AnimationInfo *anim = &cursor_info[0]; // CLICK_WAIT
+        if (clickstr_state == CLICK_NEWPAGE)
             anim = &cursor_info[1];
         
         if (anim->proceedAnimation(current_time)){

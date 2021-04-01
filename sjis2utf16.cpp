@@ -23,7 +23,7 @@
 #include <string.h>
 
 static const uint16_t CODINGLEFT = 0x8140,CODINGRIGHT = 0xfcfc;
-static uint16_t *sjis_2_utf16;
+static unsigned short *sjis_2_utf16;
 
 static unsigned short *utf16_2_sjis_00;
 static unsigned short *utf16_2_sjis_1e;

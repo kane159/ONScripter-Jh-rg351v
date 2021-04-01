@@ -19,7 +19,7 @@ TARGET = vendor/lua/liblua.a \
 EXT_OBJS = 
 
 # mandatory: SDL, SDL_ttf, SDL_image, SDL_mixer, bzip2
-DEFS = -DLINUX -DUSE_SDL_RENDERER
+DEFS = -DLINUX -DRG351V -DUSE_SDL_RENDERER -DNDEBUG
 INCS = `$(SYSROOT_PREFIX)$(SYSBIN_PATH)sdl2-config --cflags`
 LIBS = `$(SYSROOT_PREFIX)$(SYSBIN_PATH)sdl2-config --libs` -L./vendor/lua/ -lSDL2_ttf -lSDL2_image -lSDL2_mixer -ljpeg -lbz2 -lm -llua -ldl
 EXT_FLAGS = 

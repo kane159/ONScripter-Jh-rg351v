@@ -27,9 +27,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "SarReader.h"
-#include "sjis2utf16.h"
-
-Coding2UTF16 *coding2utf16 = new SJIS2UTF16();
 
 extern int scale_ratio_upper;
 extern int scale_ratio_lower;

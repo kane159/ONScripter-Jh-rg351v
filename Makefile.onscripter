@@ -100,6 +100,8 @@ clean:
 	-$(RM) $(TARGET)
 	-$(RM) *$(OBJSUFFIX)
 	-$(RM) builtin_dll/*$(OBJSUFFIX)
+	-$(RM) vendor/lua/*.a
+	-$(RM) vendor/lua/*.o
 
 .cpp$(OBJSUFFIX):
 	$(CC) $(CFLAGS) -o $@ $<

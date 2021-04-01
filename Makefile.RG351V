@@ -73,7 +73,7 @@ DEFS += -DUSE_BUILTIN_EFFECTS -DUSE_BUILTIN_LAYER_EFFECTS
 
 # for GNU g++
 #CC = g++ 
-CC =/opt/myprojects/EmuELEC/build.EmuELEC-OdroidGoAdvance.arm-3.8/toolchain/bin/armv8a-libreelec-linux-gnueabi-g++
+CC =/opt/myprojects/EmuELEC/build.EmuELEC-OdroidGoAdvance.arm-3.8/toolchain/bin/armv8a-libreelec-linux-gnueabi-gcc
 CXX=/opt/myprojects/EmuELEC/build.EmuELEC-OdroidGoAdvance.arm-3.8/toolchain/bin/armv8a-libreelec-linux-gnueabi-g++
 #LD = g++ -o
 
@@ -99,4 +99,4 @@ include Makefile.onscripter
 
 
 vendor/lua/liblua.a:
-	$(MAKE) -C vendor/lua
+	$(MAKE) -C vendor/lua -f makefile.RG351V

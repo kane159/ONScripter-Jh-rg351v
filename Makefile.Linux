@@ -5,7 +5,7 @@
 
 EXESUFFIX =
 OBJSUFFIX = .o
-SYSROOT_PREFIX = /opt/myprojects/EmuELEC/build.EmuELEC-OdroidGoAdvance.arm-3.8/toolchain/armv8a-libreelec-linux-gnueabi/sysroot/
+SYSROOT_PREFIX = 
 SYSBIN_PATH = /usr/bin/
 .SUFFIXES:
 .SUFFIXES: $(OBJSUFFIX) .cpp .h
@@ -73,9 +73,8 @@ DEFS += -DUSE_BUILTIN_EFFECTS -DUSE_BUILTIN_LAYER_EFFECTS
 
 
 # for GNU g++
-#CC = g++ 
-CC =/opt/myprojects/EmuELEC/build.EmuELEC-OdroidGoAdvance.arm-3.8/toolchain/bin/armv8a-libreelec-linux-gnueabi-g++
-CXX=/opt/myprojects/EmuELEC/build.EmuELEC-OdroidGoAdvance.arm-3.8/toolchain/bin/armv8a-libreelec-linux-gnueabi-g++
+CC = gcc 
+CXX= g++
 #LD = g++ -o
 
 #CFLAGS = -g -Wall -pipe -c $(INCS) $(DEFS)

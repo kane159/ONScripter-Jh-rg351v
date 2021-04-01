@@ -209,6 +209,20 @@ ONS_Key transJoystickButton(Uint8 button)
         SDLK_a,       /* START     */
     };
     return button_map[button];
+#else
+    SDL_Keycode button_map[] = {
+	SDLK_SPACE,   /* X         */
+    SDLK_RCTRL,   /* A         */
+    SDLK_RETURN,  /* B         */
+    SDLK_ESCAPE,  /* Y         */
+    SDLK_o,       /* L         */
+    SDLK_UNKNOWN, /* UPLEFT    */
+    SDLK_s,       /* R         */
+    SDLK_UNKNOWN, /* DOWNLEFT  */
+    SDLK_0,       /* SELECT    */
+    SDLK_a,       /* START     */
+};
+return button_map[button];
 #endif
     return SDLK_UNKNOWN;
 }
@@ -223,6 +237,10 @@ SDL_KeyboardEvent transJoystickAxis(SDL_JoyAxisEvent &jaxis)
                          SDLK_RIGHT, /* AL-RIGHT */
                          SDLK_UP,    /* AL-UP    */
                          SDLK_DOWN   /* AL-DOWN  */};
+    printf("axis_map:%d,%d,%d,%d\n",SDLK_LEFT,  /* AL-LEFT  */
+                         SDLK_RIGHT, /* AL-RIGHT */
+                         SDLK_UP,    /* AL-UP    */
+                         SDLK_DOWN );
 
     int axis = -1;
     /* rerofumi: Jan.15.2007 */
@@ -231,22 +249,31 @@ SDL_KeyboardEvent transJoystickAxis(SDL_JoyAxisEvent &jaxis)
         axis = ((3200 > jaxis.value) && (jaxis.value > -3200) ? -1 :
                 (jaxis.axis * 2 + (jaxis.value>0 ? 1 : 0) ));
     }
-
+    printf("axis:%d\n",axis);
+    char* strtype = NULL;
     if (axis != old_axis){
         if (axis == -1){
+            strtype = "SDL_KEYUP";
             event.type = SDL_KEYUP;
             event.keysym.sym = axis_map[old_axis];
         }
-        else{
+        else {
+            strtype = "SDL_KEYDOWN";
             event.type = SDL_KEYDOWN;
             event.keysym.sym = axis_map[axis];
         }
         old_axis = axis;
     }
     else{
+        strtype = "SDLK_UNKNOWN";
         event.keysym.sym = SDLK_UNKNOWN;
     }
-    
+    if(event.keysym.sym == SDLK_UNKNOWN) {
+        printf("transJoystickAxis SDLK_UNKNOWN\n");
+    }
+    else {
+        printf("transJoystickAxis:event.type:%s,event.keysym.sym:%d\n",strtype,event.keysym.sym);
+    }
     return event;
 }
 
@@ -1191,7 +1218,7 @@ void ONScripter::timerEvent(bool init_flag)
 }
 
 #if (defined(IOS) || defined(ANDROID) || defined(WINRT))
-//TODO: ÉÏÏÂ×óÓÒ¼üÄ£Äâ
+//TODO: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½Ä£ï¿½ï¿½
 SDL_MouseWheelEvent transTouchKey(SDL_TouchFingerEvent &finger) {
     static struct FingerPoint {
         float x, y;
@@ -1230,6 +1257,7 @@ void ONScripter::runEventLoop()
     SDL_KeyboardEvent hat_ke;
 
     while ( SDL_WaitEvent(&event) ) {
+        printf("event.type:%d\n",event.type);
 #if defined(USE_SMPEG)
         // required to repeat the movie
         if (layer_smpeg_sample)
@@ -1342,6 +1370,7 @@ void ONScripter::runEventLoop()
             break;
 #endif
           case SDL_JOYBUTTONDOWN:
+            printf("SDL_JOYBUTTONDOWN:%d\n",event.jbutton.button);
             event.key.type = SDL_KEYDOWN;
             event.key.keysym.sym = transJoystickButton(event.jbutton.button);
             if(event.key.keysym.sym == SDLK_UNKNOWN)
@@ -1356,6 +1385,7 @@ void ONScripter::runEventLoop()
             break;
 
           case SDL_JOYBUTTONUP:
+            printf("SDL_JOYBUTTONUP:%d\n",event.jbutton.button);
             event.key.type = SDL_KEYUP;
             event.key.keysym.sym = transJoystickButton(event.jbutton.button);
             if(event.key.keysym.sym == SDLK_UNKNOWN)
@@ -1370,6 +1400,7 @@ void ONScripter::runEventLoop()
 
           case SDL_JOYAXISMOTION:
           {
+              printf("SDL_JOYAXISMOTION:axis:%d,value:%d\n",event.jaxis.axis,event.jaxis.value);
               SDL_KeyboardEvent ke = transJoystickAxis(event.jaxis);
               if (ke.keysym.sym != SDLK_UNKNOWN){
                   if (ke.type == SDL_KEYDOWN){
@@ -1385,6 +1416,7 @@ void ONScripter::runEventLoop()
               break;
           }
 	  case SDL_JOYHATMOTION:
+            printf("SDL_JOYHATMOTION:%d\n",event.jhat.value);
 			hat_ke.type = SDL_KEYDOWN;
 				switch (event.jhat.value)
 				{

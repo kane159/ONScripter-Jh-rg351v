@@ -2,7 +2,8 @@
 
 #define	JOYSTICK_NEUTRAL_RANGE_FROM -2000
 #define JOYSTICK_NEUTRAL_RANGE_TO 2000
-
+#define MAX_W 640
+#define MAX_H 480
 #define X 0
 #define Y 1
 
@@ -31,8 +32,8 @@ int jmouse_init(SDL_Window* window, int width, int height, Uint16 cursor_x, Uint
 		return -1;
 	}
 	printf("jmouse_open\n");
-	screen_size[X] = width;
-	screen_size[Y] = height;
+	screen_size[X] = MAX_W;
+	screen_size[Y] = MAX_H;
 	value_divider = divider;
 
 	cursor_position[X] = MIN(cursor_x, width);
@@ -80,7 +81,7 @@ void jmouse_update(const SDL_Event* event)
 
 		for (i = 0; i < 2; i++) {
 
-			cursor_position[i] += (deltaXY[i]/ value_divider);
+			cursor_position[i] += (deltaXY[i]/ value_divider/ 10.0);
 			printf("cursor_position[i]:%f\n",cursor_position[i]);
 			if (cursor_position[i] < 0)
 				cursor_position[i] = 0;
@@ -88,19 +89,28 @@ void jmouse_update(const SDL_Event* event)
 				cursor_position[i] = screen_size[i];
 
 			old_axes_values[i] = axes_values[i];
+			if(deltaXY[i] > 0) {
+				SDL_WarpMouseInWindow(app_window,cursor_position[X], cursor_position[Y]);
+			}
 		}
 
-		++frame_cnt;
-
-		new_time = SDL_GetTicks();
-		if (new_time - time > 500) {
-			time = new_time;
-			printf("SDL_WarpMouseInWindow:%d,%f,%f\n",app_window,fps,cursor_position[X], cursor_position[Y]);                                                                                                                       SDL_WarpMouseInWindow(app_window, cursor_position[X], cursor_position[Y]);                                                                                                                                              SDL_PumpEvents();
-		}
-		if (new_time - time > 1000) {
-			time = new_time;
-			fps = frame_cnt;
-			frame_cnt = 0;
-		}
+			printf("SDL_WarpMouseInWindow:%d,%f,%f\n",fps,cursor_position[X], cursor_position[Y]); 
+			
+			/*SDL_Event event = {0};
+                	event.type = SDL_MOUSEMOTION;
+                	event.motion.x = cursor_position[X];
+                	event.motion.y = cursor_position[Y];
+       	         	event.motion.xrel = cursor_position[X];
+       	         	event.motion.yrel = cursor_position[Y];
+	                SDL_PushEvent(&event);*/
 	}
+
+	++frame_cnt;
+	new_time = SDL_GetTicks();
+	if (new_time - time > 1000) {
+		time = new_time;
+		fps = frame_cnt;
+		frame_cnt = 0;
+	}
+	
 }

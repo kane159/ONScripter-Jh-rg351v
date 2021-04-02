@@ -24,6 +24,7 @@
 
 #include "ONScripter.h"
 #include "Utils.h"
+#include "jmouse.h"
 #if defined(LINUX)
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -131,7 +132,7 @@ ONS_Key transKey(ONS_Key key)
     return key;
 }
 
-ONS_Key transJoystickButton(Uint8 button)
+SDL_Keycode transJoystickButton(Uint8 button)
 {
 #if defined(PSP)    
     SDLKey button_map[] = { SDLK_ESCAPE, /* TRIANGLE */
@@ -195,11 +196,11 @@ ONS_Key transJoystickButton(Uint8 button)
         SDLK_UNKNOWN, /* STICK     */
     };
     return button_map[button];
-#elif defined(RC)
-    SDLKey button_map[] = {
+#elif defined(RG351V)
+    SDL_Keycode button_map[] = {
+	SDLK_RCTRL,   /* A         */
+	SDLK_RETURN,  /* B         */
 	SDLK_SPACE,   /* X         */
-        SDLK_RCTRL,   /* A         */
-        SDLK_RETURN,  /* B         */
         SDLK_ESCAPE,  /* Y         */
         SDLK_o,       /* L         */
         SDLK_UNKNOWN, /* UPLEFT    */
@@ -1244,7 +1245,6 @@ void ONScripter::runEventLoop()
 
             event = tmp_event;
         }
-
         switch (event.type) {
 #if defined(IOS) || defined(ANDROID) || defined(WINRT)
         case SDL_FINGERMOTION:
@@ -1342,11 +1342,12 @@ void ONScripter::runEventLoop()
             break;
 #endif
           case SDL_JOYBUTTONDOWN:
+	    printf("SDL_JOYBUTTONDOWN:%d\n",event.jbutton.button);
             event.key.type = SDL_KEYDOWN;
             event.key.keysym.sym = transJoystickButton(event.jbutton.button);
             if(event.key.keysym.sym == SDLK_UNKNOWN)
                 break;
-            
+            printf("transTo:%d\n", event.key.keysym.sym);
           case SDL_KEYDOWN:
             event.key.keysym.sym = transKey(event.key.keysym.sym);
             ret = keyDownEvent( &event.key );
@@ -1356,11 +1357,12 @@ void ONScripter::runEventLoop()
             break;
 
           case SDL_JOYBUTTONUP:
+	    printf("SDL_JOYBUTTONUP:%d\n",event.jbutton.button);
             event.key.type = SDL_KEYUP;
             event.key.keysym.sym = transJoystickButton(event.jbutton.button);
             if(event.key.keysym.sym == SDLK_UNKNOWN)
                 break;
-            
+            printf("transTo:%d\n", event.key.keysym.sym);
           case SDL_KEYUP:
             event.key.keysym.sym = transKey(event.key.keysym.sym);
             keyUpEvent( &event.key );
@@ -1370,6 +1372,7 @@ void ONScripter::runEventLoop()
 
           case SDL_JOYAXISMOTION:
           {
+	      /*
               SDL_KeyboardEvent ke = transJoystickAxis(event.jaxis);
               if (ke.keysym.sym != SDLK_UNKNOWN){
                   if (ke.type == SDL_KEYDOWN){
@@ -1381,7 +1384,8 @@ void ONScripter::runEventLoop()
                       keyUpEvent( &ke );
                       keyPressEvent( &ke );
                   }
-              }
+              }*/
+	      jmouse_update(&event);	
               break;
           }
 	  case SDL_JOYHATMOTION:

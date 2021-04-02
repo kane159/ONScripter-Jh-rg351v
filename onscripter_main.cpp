@@ -82,7 +82,7 @@ void optionVersion()
     exit(0);
 }
 
-#ifdef ANDROID
+#if (defined(ANDROID))
 extern "C"
 {
 #include <jni.h>

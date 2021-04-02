@@ -91,6 +91,7 @@ void jmouse_update(const SDL_Event* event)
 			old_axes_values[i] = axes_values[i];
 			if(deltaXY[i] > 0) {
 				SDL_WarpMouseInWindow(app_window,cursor_position[X], cursor_position[Y]);
+				//TODO: use uinput https://blog.csdn.net/dayong419/article/details/9099023
 			}
 		}
 

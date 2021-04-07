@@ -21,7 +21,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+#include <cerrno>
+#include <string.h>
 #include "DirectReader.h"
 #include "Utils.h"
 #include "coding2utf16.h"
@@ -118,8 +119,14 @@ FILE *DirectReader::fopen(const char *path, const char *mode)
     sprintf( file_full_path, "%s%s", archive_path, path );
 
     FILE *fp = ::fopen( file_full_path, mode );
-    if (fp) return fp;
 
+    if (fp) {
+         return fp;
+    }
+    else {
+        fprintf( stderr, "%s%d\ncan't open file %s,mode:%s.\n", __FILE__,__LINE__,file_full_path, mode );
+	fprintf( stderr, "open fail errno = %d reason = %s \n", errno, "");
+    }
 #if !defined(WIN32) && !defined(_WIN32) && !defined(MACOS9) && !defined(PSP) && !defined(__OS2__)
     char *cur_p = NULL;
     DIR *dp = NULL;
@@ -127,7 +134,7 @@ FILE *DirectReader::fopen(const char *path, const char *mode)
     if (len > 0) dp = opendir(archive_path);
     else         dp = opendir(".");
     cur_p = file_full_path+len;
-
+    fprintf(stderr, "%s%d\ncur_p:%s\n", __FILE__,__LINE__, cur_p);
     while(1){
         if (dp == NULL) return NULL;
 

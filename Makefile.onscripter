@@ -20,6 +20,7 @@ GUI_OBJS =	ONScripter$(OBJSUFFIX)\
 	FontInfo$(OBJSUFFIX) \
 	DirtyRect$(OBJSUFFIX) \
 	resize_image$(OBJSUFFIX) \
+	jmouse$(OBJSUFFIX) \
 	ONScripter_directdraw$(OBJSUFFIX) \
 	builtin_dll/layer_snow$(OBJSUFFIX) \
 	builtin_dll/ONScripter_effect_cascade$(OBJSUFFIX) \

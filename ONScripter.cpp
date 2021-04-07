@@ -25,6 +25,7 @@
 #include "ONScripter.h"
 #include "Utils.h"
 #include "coding2utf16.h"
+#include "jmouse.h"
 #ifdef USE_FONTCONFIG
 #include <fontconfig/fontconfig.h>
 #endif
@@ -93,7 +94,7 @@ void ONScripter::initSDL()
     /* ---------------------------------------- */
     /* Initialize SDL */
 
-    if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO ) < 0 ){
+    if ( SDL_Init( /*SDL_INIT_VIDEO |*/ SDL_INIT_TIMER | SDL_INIT_AUDIO ) < 0 ){
         utils::printError("Couldn't initialize SDL: %s\n", SDL_GetError());
         exit(-1);
     }
@@ -193,6 +194,7 @@ void ONScripter::initSDL()
     underline_value = script_h.screen_height;
 
     utils::printInfo("Display: %d x %d (%d bpp)\n", screen_width, screen_height, screen_bpp);
+    jmouse_init(window,screen_width, screen_height,0,0,100);
     dirty_rect.setDimension(screen_width, screen_height);
     
     screen_rect.x = screen_rect.y = 0;
@@ -732,7 +734,7 @@ void ONScripter::flushDirect( SDL_Rect &rect, int refresh_mode )
     SDL_UnlockSurface(accumulation_surface);
 
     screen_dirty_flag = false;
-    #if defined(ANDROID) || defined(_MSC_VER)   
+    #if defined(RG351V) || defined(ANDROID) || defined(_MSC_VER)   
         if (compatibilityMode) {
             SDL_RenderClear(renderer);
         }

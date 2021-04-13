@@ -26,6 +26,7 @@
 #include "Utils.h"
 #include "coding2utf16.h"
 #include "jmouse.h"
+#include "mouse.cc"
 #ifdef USE_FONTCONFIG
 #include <fontconfig/fontconfig.h>
 #endif
@@ -33,7 +34,7 @@
 #include "simd/simd.h"
 #endif
 #include <stdlib.h>
-
+extern ONScripter ons;
 extern Coding2UTF16 *coding2utf16;
 extern "C" void waveCallback(int channel);
 
@@ -42,7 +43,7 @@ extern "C" void waveCallback(int channel);
 #define FONT_FILE "default.ttf"
 #define REGISTRY_FILE "registry.txt"
 #define DLL_FILE "dll.txt"
-#define DEFAULT_ENV_FONT "ËÎÌå"
+#define DEFAULT_ENV_FONT "ï¿½ï¿½ï¿½ï¿½"
 #define DEFAULT_AUTOMODE_TIME 1000
 
 #ifdef __OS2__
@@ -194,6 +195,11 @@ void ONScripter::initSDL()
     underline_value = script_h.screen_height;
 
     utils::printInfo("Display: %d x %d (%d bpp)\n", screen_width, screen_height, screen_bpp);
+    
+    SDL_ShowCursor(false);
+    SDL_RWops *src = SDL_RWFromMem(data_images_mouse_png, data_images_mouse_png_len);
+	mouseTexture = SDL_CreateTextureFromSurface(renderer,IMG_Load_RW(src, 1));
+	
     jmouse_init(window,screen_width, screen_height,0,0,100);
     dirty_rect.setDimension(screen_width, screen_height);
     
@@ -720,7 +726,17 @@ void ONScripter::flush( int refresh_mode, SDL_Rect *rect, bool clear_dirty_flag,
     
     if ( clear_dirty_flag ) dirty_rect.clear();
 }
+void ONScripter::drawMouse() {
+	SDL_ShowCursor(false);
+	SDL_Rect clip = {0,0,32,32};
+	int x;
+	int y;
+	SDL_GetMouseState(&x,&y);
+    clip.x = (x-16)*(ons.getWidth()/640.0);
+    clip.y = y*(ons.getHeight()/480.0);
+    SDL_RenderCopy( renderer, mouseTexture, NULL, &clip );
 
+}
 void ONScripter::flushDirect( SDL_Rect &rect, int refresh_mode )
 {
     //utils::printInfo("flush %d: %d %d %d %d\n", refresh_mode, rect.x, rect.y, rect.w, rect.h );
@@ -734,7 +750,7 @@ void ONScripter::flushDirect( SDL_Rect &rect, int refresh_mode )
     SDL_UnlockSurface(accumulation_surface);
 
     screen_dirty_flag = false;
-    #if defined(RG351V) || defined(ANDROID) || defined(_MSC_VER)   
+    #if defined(RG351V) || defined(USEMOUSE) || defined(ANDROID) || defined(_MSC_VER)   
         if (compatibilityMode) {
             SDL_RenderClear(renderer);
         }
@@ -743,6 +759,7 @@ void ONScripter::flushDirect( SDL_Rect &rect, int refresh_mode )
     #else
         SDL_RenderCopy(renderer, texture, &dst_rect, &dst_rect);
     #endif
+    drawMouse();
     SDL_RenderPresent(renderer);
 }
 

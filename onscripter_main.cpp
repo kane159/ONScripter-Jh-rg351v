@@ -27,7 +27,7 @@
 #include "gbk2utf16.h"
 #include "sjis2utf16.h"
 #include "version.h"
-
+#include "uinput.h"
 ONScripter ons;
 extern Coding2UTF16 *coding2utf16;
 
@@ -407,5 +407,6 @@ int main(int argc, char *argv[])
     if (ons.openScript()) exit(-1);
     if (ons.init()) exit(-1);
     ons.executeLabel();
+    uninstall_uinput_mouse_device();
     exit(0);
 }

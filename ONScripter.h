@@ -330,7 +330,7 @@ private:
            WAIT_TEXT_MODE   = 256 // clickwait, newpage, select
     };
     int  event_mode;
-
+    SDL_Texture* mouseTexture = 0;
     bool is_script_read;
     char *wm_title_string;
     char *wm_icon_string;
@@ -418,6 +418,7 @@ private:
     void resetSentenceFont();
     void flush( int refresh_mode, SDL_Rect *rect=NULL, bool clear_dirty_flag=true, bool direct_flag=false );
     void flushDirect( SDL_Rect &rect, int refresh_mode );
+    void drawMouse();
     #ifdef USE_SMPEG
     void flushDirectYUV(SDL_Overlay *overlay);
     #endif

@@ -2188,7 +2188,7 @@ int ONScripter::gettagCommand()
 
     if (buf[0] == '[')
         buf++;
-    else if (zenkakko_flag && buf[0] == "¡Ú"[0] && buf[1] == "¡Ú"[1])
+    else if (zenkakko_flag && buf[0] == "ï¿½ï¿½"[0] && buf[1] == "ï¿½ï¿½"[1])
         buf += 2;
     else
         buf = NULL;
@@ -2210,7 +2210,7 @@ int ONScripter::gettagCommand()
             if (buf){
                 const char *buf_start = buf;
                 while(*buf != '/' && *buf != 0 && *buf != ']' && 
-                      (!zenkakko_flag || buf[0] != "¡Û"[0] || buf[1] != "¡Û"[1])){
+                      (!zenkakko_flag || buf[0] != "ï¿½ï¿½"[0] || buf[1] != "ï¿½ï¿½"[1])){
                     if (IS_TWO_BYTE(*buf))
                         buf += 2;
                     else
@@ -2234,7 +2234,7 @@ int ONScripter::gettagCommand()
     if (pretext_buf[0] == ']')
         pretext_buf++;
     else if (zenkakko_flag && 
-             pretext_buf[0] == "¡Û"[0] && pretext_buf[1] == "¡Û"[1])
+             pretext_buf[0] == "ï¿½ï¿½"[0] && pretext_buf[1] == "ï¿½ï¿½"[1])
         pretext_buf += 2;
 
     return RET_CONTINUE;
@@ -2837,6 +2837,7 @@ int ONScripter::endCommand()
 {
     quit();
     stopSMPEG();
+    
     exit(0);
     return RET_CONTINUE; // dummy
 }

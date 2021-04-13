@@ -274,6 +274,8 @@ protected:
     /* Global definitions */
     int screen_ratio1, screen_ratio2;
     int screen_width, screen_height;
+    int mouse_x = 0;
+    int mouse_y = 0;
     int screen_device_width, screen_device_height;
     int device_width, device_height;
     float screen_scale_ratio1, screen_scale_ratio2;

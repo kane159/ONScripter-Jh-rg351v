@@ -195,6 +195,7 @@ void ONScripter::initSDL()
     underline_value = script_h.screen_height;
 
     utils::printInfo("Display: %d x %d (%d bpp)\n", screen_width, screen_height, screen_bpp);
+    utils::printInfo("sdw:%d,sdh:%d,sw:%d,sh:%d\n",screen_device_width,screen_device_height,screen_width,screen_height);
     
     SDL_ShowCursor(false);
     SDL_RWops *src = SDL_RWFromMem(data_images_mouse_png, data_images_mouse_png_len);
@@ -729,11 +730,13 @@ void ONScripter::flush( int refresh_mode, SDL_Rect *rect, bool clear_dirty_flag,
 void ONScripter::drawMouse() {
 	SDL_ShowCursor(false);
 	SDL_Rect clip = {0,0,32,32};
-	int x;
-	int y;
-	SDL_GetMouseState(&x,&y);
-    clip.x = (x-16)*(ons.getWidth()/640.0);
-    clip.y = y*(ons.getHeight()/480.0);
+	int x = mouse_x;
+	int y = mouse_y;
+	//SDL_GetMouseState(&x,&y);
+    //clip.x = (x-16)*(ons.getWidth()/640.0);
+    //clip.y = y*(ons.getHeight()/480.0);
+    clip.x = (x-16);
+    clip.y = y;
     SDL_RenderCopy( renderer, mouseTexture, NULL, &clip );
 
 }
@@ -893,6 +896,9 @@ void ONScripter::mouseOverCheck( int x, int y )
 }
 
 void ONScripter::warpMouse(int x, int y) {
+    printf("warpMouse:%d,%d\n",x,y);
+    x = x * (640.0/screen_width);
+    y = y * (480.0/screen_height);
     SDL_WarpMouseInWindow(NULL, x, y);
 }
 

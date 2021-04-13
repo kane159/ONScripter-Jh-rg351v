@@ -1549,8 +1549,11 @@ int ONScripter::movieCommand()
 
 int ONScripter::movemousecursorCommand()
 {
-    int x = script_h.readInt() * screen_ratio1 / screen_ratio2;
-    int y = script_h.readInt() * screen_ratio1 / screen_ratio2;
+    int sx = script_h.readInt();
+    int sy = script_h.readInt();
+    printf("movemousecursorCommand:%d,%d,%d,%d, %d,%d\n",sx,sy,screen_ratio1,screen_ratio2,screen_device_width,screen_width);
+    int x = sx * screen_ratio1 / screen_ratio2;
+    int y = sy * screen_ratio1 / screen_ratio2;
     x = x * screen_device_width / screen_width;
     y = y * screen_device_width / screen_width;
 

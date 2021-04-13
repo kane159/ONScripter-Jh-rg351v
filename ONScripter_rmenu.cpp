@@ -117,6 +117,8 @@ void ONScripter::leaveSystemCall( bool restore_flag )
         if ( event_mode & WAIT_BUTTON_MODE ){
             int x = shelter_mouse_state.x * screen_device_width / screen_width;
             int y = shelter_mouse_state.y * screen_device_width / screen_width;
+
+            printf("leaveSystemCall:%d,%d,%d,%d\n",x,y,screen_device_width,screen_width);
             warpMouse(x, y);
         }
     }

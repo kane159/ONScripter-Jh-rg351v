@@ -18,8 +18,7 @@
 #include "ONScripter.h"
 
 extern ONScripter ons;
-int lastX=0;
-int lastY=0;
+
 static int device_handler = -1;
 static struct uinput_user_dev vir_mouse;
  
@@ -88,12 +87,7 @@ void uninstall_uinput_mouse_device()
  
 void mouse_move(struct deltaData* data)
 {
-    if((lastX+data->x)> ons.getWidth()) {
-        return;
-    }
-    if((lastY+data->y)> ons.getHeight()) {
-        return;
-    }
+    
     if (device_handler <= 0)
     {
         install_uinput_mouse_device();
@@ -109,14 +103,14 @@ void mouse_move(struct deltaData* data)
         event.type = EV_REL;
         event.code = REL_X;
         event.value = data->x;
-        lastX+=data->x;
+        //lastX+=data->x;
         write(device_handler, &event, sizeof(event));
  
         //y coordinate
         event.type  = EV_REL;
         event.code  = REL_Y;
         event.value = data->y;
-        lastY+=data->y;
+        //lastY+=data->y;
         write(device_handler, &event, sizeof(event));
  
         //execute move event

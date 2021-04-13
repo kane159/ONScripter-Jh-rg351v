@@ -786,9 +786,14 @@ void ONScripter::shiftCursorOnButton( int diff )
         else if (x >= screen_width) x = screen_width-1;
         if      (y < 0)              y = 0;
         else if (y >= screen_height) y = screen_height-1;
+
+
         x = x * screen_device_width / screen_width;
         y = y * screen_device_width / screen_width;
         shift_over_button = button->no;
+
+        printf("shiftCursorOnButton:%d,%d,%d,%d\n",x,y,screen_device_width,screen_width);
+
         warpMouse(x, y);
     }
 }
@@ -1339,6 +1344,8 @@ void ONScripter::runEventLoop()
 #endif
 #if !defined(ANDROID) && !defined(IOS) && !defined(WINRT)
           case SDL_MOUSEMOTION:
+            mouse_x  =  event.motion.x;
+            mouse_y  =  event.motion.y;
             flushDirect( screen_rect, REFRESH_NONE_MODE );
             if (mouseMoveEvent( &event.motion )) return;
             if (btndown_flag){

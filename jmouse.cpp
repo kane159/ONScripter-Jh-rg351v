@@ -18,7 +18,7 @@ static unsigned int frame_cnt = 0;
 static unsigned int fps = 0;
 static SDL_Window* app_window = NULL;
 static int deltaXY[2] = {0,0};
-int jmouse_init(SDL_Window* window, int width, int height, Uint16 cursor_x, Uint16 cursor_y, Uint16 divider)
+/*int jmouse_init(SDL_Window* window, int width, int height, Uint16 cursor_x, Uint16 cursor_y, Uint16 divider)
 {
 	app_window = window;
 	if (SDL_WasInit(SDL_INIT_JOYSTICK) == 0 || SDL_NumJoysticks() == 0)
@@ -68,3 +68,4 @@ void jmouse_update(const SDL_Event* event)
 	}
 	
 }
+ */

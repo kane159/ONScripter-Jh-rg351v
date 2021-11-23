@@ -1263,7 +1263,7 @@ void ONScripter::runEventLoop()
     SDL_KeyboardEvent hat_ke;
 
     while ( SDL_WaitEvent(&event) ) {
-	jmouse_update(&event);
+	//jmouse_update(&event);
 #if defined(USE_SMPEG)
         // required to repeat the movie
         if (layer_smpeg_sample)

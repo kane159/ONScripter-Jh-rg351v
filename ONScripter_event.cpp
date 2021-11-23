@@ -228,55 +228,55 @@ return button_map[button];
     return SDLK_UNKNOWN;
 }
 
-SDL_KeyboardEvent transJoystickAxis(SDL_JoyAxisEvent &jaxis)
-{
-    static int old_axis=-1;
+//SDL_KeyboardEvent transJoystickAxis(SDL_JoyAxisEvent &jaxis)
+//{
+//    static int old_axis=-1;
 
-    SDL_KeyboardEvent event;
+//    SDL_KeyboardEvent event;
 
-    ONS_Key axis_map[] = {SDLK_LEFT,  /* AL-LEFT  */
-                         SDLK_RIGHT, /* AL-RIGHT */
-                         SDLK_UP,    /* AL-UP    */
-                         SDLK_DOWN   /* AL-DOWN  */};
-    printf("axis_map:%d,%d,%d,%d\n",SDLK_LEFT,  /* AL-LEFT  */
-                         SDLK_RIGHT, /* AL-RIGHT */
-                         SDLK_UP,    /* AL-UP    */
-                         SDLK_DOWN );
+//    ONS_Key axis_map[] = {SDLK_LEFT,  /* AL-LEFT  */
+//                         SDLK_RIGHT, /* AL-RIGHT */
+//                         SDLK_UP,    /* AL-UP    */
+//                         SDLK_DOWN   /* AL-DOWN  */};
+//    printf("axis_map:%d,%d,%d,%d\n",SDLK_LEFT,  /* AL-LEFT  */
+//                         SDLK_RIGHT, /* AL-RIGHT */
+//                         SDLK_UP,    /* AL-UP    */
+//                         SDLK_DOWN );
 
-    int axis = -1;
+//    int axis = -1;
     /* rerofumi: Jan.15.2007 */
     /* ps3's pad has 0x1b axis (with analog button) */
-    if (jaxis.axis < 2){
-        axis = ((3200 > jaxis.value) && (jaxis.value > -3200) ? -1 :
-                (jaxis.axis * 2 + (jaxis.value>0 ? 1 : 0) ));
-    }
-    printf("axis:%d\n",axis);
-    char* strtype = NULL;
-    if (axis != old_axis){
-        if (axis == -1){
-            strtype = "SDL_KEYUP";
-            event.type = SDL_KEYUP;
-            event.keysym.sym = axis_map[old_axis];
-        }
-        else {
-            strtype = "SDL_KEYDOWN";
-            event.type = SDL_KEYDOWN;
-            event.keysym.sym = axis_map[axis];
-        }
-        old_axis = axis;
-    }
-    else{
-        strtype = "SDLK_UNKNOWN";
-        event.keysym.sym = SDLK_UNKNOWN;
-    }
-    if(event.keysym.sym == SDLK_UNKNOWN) {
-        printf("transJoystickAxis SDLK_UNKNOWN\n");
-    }
-    else {
-        printf("transJoystickAxis:event.type:%s,event.keysym.sym:%d\n",strtype,event.keysym.sym);
-    }
-    return event;
-}
+//    if (jaxis.axis < 2){
+//        axis = ((3200 > jaxis.value) && (jaxis.value > -3200) ? -1 :
+//                (jaxis.axis * 2 + (jaxis.value>0 ? 1 : 0) ));
+//    }
+//    printf("axis:%d\n",axis);
+//    char* strtype = NULL;
+//    if (axis != old_axis){
+//        if (axis == -1){
+//            strtype = "SDL_KEYUP";
+//            event.type = SDL_KEYUP;
+//            event.keysym.sym = axis_map[old_axis];
+//        }
+//        else {
+//            strtype = "SDL_KEYDOWN";
+//            event.type = SDL_KEYDOWN;
+//            event.keysym.sym = axis_map[axis];
+//        }
+//        old_axis = axis;
+//    }
+//    else{
+//        strtype = "SDLK_UNKNOWN";
+//        event.keysym.sym = SDLK_UNKNOWN;
+//    }
+//    if(event.keysym.sym == SDLK_UNKNOWN) {
+//        printf("transJoystickAxis SDLK_UNKNOWN\n");
+//    }
+//    else {
+//        printf("transJoystickAxis:event.type:%s,event.keysym.sym:%d\n",strtype,event.keysym.sym);
+//    }
+//    return event;
+//}
 
 void ONScripter::flushEventSub( SDL_Event &event )
 {

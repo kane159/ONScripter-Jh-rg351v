@@ -3,7 +3,7 @@
 # Makefile.onscripter - General makefile rules for ONScripter
 #
 
-GUI_OBJS = ONScripter$(OBJSUFFIX) \
+GUI_OBJS =	ONScripter$(OBJSUFFIX)\
 	ONScripter_animation$(OBJSUFFIX) \
 	ONScripter_command$(OBJSUFFIX) \
 	ONScripter_effect$(OBJSUFFIX) \
@@ -20,32 +20,35 @@ GUI_OBJS = ONScripter$(OBJSUFFIX) \
 	FontInfo$(OBJSUFFIX) \
 	DirtyRect$(OBJSUFFIX) \
 	resize_image$(OBJSUFFIX) \
+	jmouse$(OBJSUFFIX) \
+	uinput$(OBJSUFFIX) \
 	ONScripter_directdraw$(OBJSUFFIX) \
 	builtin_dll/layer_snow$(OBJSUFFIX) \
 	builtin_dll/ONScripter_effect_cascade$(OBJSUFFIX) \
 	builtin_dll/ONScripter_effect_trig$(OBJSUFFIX) \
 	builtin_dll/layer_oldmovie$(OBJSUFFIX)
 
-CHARSET_SUPPORT_OBJS=coding2utf16$(OBJSUFFIX) \
-	sjis2utf16$(OBJSUFFIX) \
-	gbk2utf16$(OBJSUFFIX)
-
 DECODER_OBJS = DirectReader$(OBJSUFFIX) \
 	SarReader$(OBJSUFFIX) \
 	NsaReader$(OBJSUFFIX) \
-	$(CHARSET_SUPPORT_OBJS)
+	sjis2utf16$(OBJSUFFIX) \
+	coding2utf16$(OBJSUFFIX) \
+	gbk2utf16$(OBJSUFFIX)
+	
 
 SARDEC_OBJS  = sardec$(OBJSUFFIX) \
+	coding2utf16$(OBJSUFFIX) \
 	DirectReader$(OBJSUFFIX) \
 	SarReader$(OBJSUFFIX) \
-	$(CHARSET_SUPPORT_OBJS)
+	sjis2utf16$(OBJSUFFIX)
 
 SARCONV_OBJS = sarconv$(OBJSUFFIX) \
+	coding2utf16$(OBJSUFFIX) \
 	conv_shared$(OBJSUFFIX) \
 	resize_image$(OBJSUFFIX) \
 	DirectReader$(OBJSUFFIX) \
 	SarReader$(OBJSUFFIX) \
-	$(CHARSET_SUPPORT_OBJS)
+	sjis2utf16$(OBJSUFFIX)
 
 NSADEC_OBJS  = nsadec$(OBJSUFFIX) \
 	$(DECODER_OBJS)

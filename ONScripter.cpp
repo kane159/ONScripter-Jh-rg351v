@@ -201,7 +201,7 @@ void ONScripter::initSDL()
     SDL_RWops *src = SDL_RWFromMem(data_images_mouse_png, data_images_mouse_png_len);
 	mouseTexture = SDL_CreateTextureFromSurface(renderer,IMG_Load_RW(src, 1));
 	
-    jmouse_init(window,screen_width, screen_height,0,0,100);
+    //jmouse_init(window,screen_width, screen_height,0,0,100);
     dirty_rect.setDimension(screen_width, screen_height);
     
     screen_rect.x = screen_rect.y = 0;
